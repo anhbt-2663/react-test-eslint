@@ -1,27 +1,36 @@
-name: ESLint PR Comment
+name: ESLint Pull Request Check
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   eslint:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
         with:
-          node-version: 18
+          ref: ${{ github.head_ref }}
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run ESLint and comment
-        uses: anhbt-2663/sun-eslint-comment-action@v1.1
+      - uses: actions/setup-node@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          debug-rule: true
+          node-version: 20
+
+      - name: Install deps
+        run: yarn install
+
+      - name: 🐞 Debug ESLint config
+        run: |
+          echo "Working directory: $PWD"
+          ls -la
+          ls -la .eslintrc.*
+
+      - name: Run ESLint Comment Action
+        uses: anhbt-2663/sun-eslint-comment-action@v1.2.20
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,27 @@
+name: ESLint PR Comment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint and comment
+        uses: anhbt-2663/sun-eslint-comment-action@v1.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          debug-rule: true
